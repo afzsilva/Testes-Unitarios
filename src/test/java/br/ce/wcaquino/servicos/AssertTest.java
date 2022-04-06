@@ -1,12 +1,22 @@
 package br.ce.wcaquino.servicos;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.Date;
 
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ErrorCollector;
+
+import br.ce.wcaquino.entidades.Filme;
+import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
+import br.ce.wcaquino.utils.DataUtils;
 
 public class AssertTest {
 	
+	@Rule
+	public ErrorCollector error = new ErrorCollector();
 	
 	@Test
 	public void test() {
@@ -50,16 +60,54 @@ public class AssertTest {
 		
 		Assert.assertSame(usuario, u3);//verifica se os objetos são da mesm instancia
 		
-		Assert.assertNull("É nulo ",u4);//verifica se o objeto é null
-		
-		
-		
-		
-		
-		
-		
-		
+		Assert.assertNull("É nulo ",u4);//verifica se o objeto é null		
 		
 	}
+	
+	
+	@Test
+	public void testAssertThat() {
+		
+				//Cenário
+				LocacaoService service = new LocacaoService();
+				Usuario usuario = new Usuario("Usuario1");		
+				Filme filme = new Filme("O Gladiador",2 ,5.0);
+				
+				//ação
+				Locacao locacao = service.alugarFilme(usuario, filme);
+				
+						
+				//Verificação		
+				//cenario feliz				
+				//AssertThat
+				Assert.assertThat(locacao.getValor(), CoreMatchers.is(5.0));
+				Assert.assertThat(locacao.getValor(), CoreMatchers.not(6.0));
+	}
+	
+	
+	@Test
+	public void testRuler() {
+		
+				//Cenário
+				LocacaoService service = new LocacaoService();
+				Usuario usuario = new Usuario("Usuario1");		
+				Filme filme = new Filme("O Gladiador",2 ,5.0);
+				
+				//ação
+				Locacao locacao = service.alugarFilme(usuario, filme);
+				
+						
+				//Verificação		
+				//cenario feliz				
+				//AssertThat
+				error.checkThat(locacao.getValor(), CoreMatchers.is(5.0));
+				error.checkThat(locacao.getValor(), CoreMatchers.not(5.0));
+				error.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(),new Date()),CoreMatchers.is(true));
+				error.checkThat(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)),CoreMatchers.is(false));		
+	}
+	
+	
+	
+	
 
 }
